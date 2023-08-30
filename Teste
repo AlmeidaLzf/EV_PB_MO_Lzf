@@ -1,0 +1,23 @@
+import cplex
+import pyomo.environ as pyomo
+from pyomo.opt import SolverFactory
+
+EXEC_PATH = 'C:\Program Files\IBM\ILOG\CPLEX_Studio2211\cplex\bin\x64_win64\cplex.exe'
+
+model = pyomo.ConcreteModel()
+model.d = pyomo.Var(initialize=0, bounds=(0,2,))
+model.g = pyomo.Var(initialize=0, bounds=(0,2,))
+model.s = pyomo.Var(initialize=0, bounds=(0,2,))
+model.b = pyomo.Var(initialize=0, bounds=(0,2,))
+
+objective_rule = model.d - model.b*model.g + model.s*model.b
+model.objective = pyomo.Objective(rule=objective_rule, sense=pyomo.minimize)
+
+# Should print all available solvers
+#print(sorted(IOptSolver._factory_cls.keys()))
+opt = SolverFactory("glpk")
+
+# Create a model instance and optimize
+instance = model
+results = opt.solve(instance)
+instance.display()
